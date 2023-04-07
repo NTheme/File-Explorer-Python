@@ -11,7 +11,7 @@ How to execute?
 You need an **shutil**, **os** and **tkinter** tlibraries to start the project.
 
 ### Execution
-  Just start the manager from the following file:
+  Just start the manager by executing the following file:
   ```sh
   filemanager.py
   ```
@@ -26,11 +26,9 @@ File manager supports the following possibilities:
 
 4. Create a folder or file. Cleck on right mouse button to open menu
 
-5. Move, copy and rename files or folders. Click on the right button on a file ot it's icon on left or right list. To paste copied you can use as well __Ctrl+C__, to paste moved Ctrl+D
+5. Move, copy and rename files or folders. Click on the right button on a file ot it's icon on left or right list. To paste copied you can use as well _Ctrl+C_, to paste moved _Ctrl+D_
 
-6. Undo action (copy, move, rename). Use Ctrl+Z or menu button
-
-**Execute**: launch filemanager.py\
+6. Undo action (copy, move, rename). Use _Ctrl+Z_ or menu button
 
 ----------------------------
 
