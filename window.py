@@ -246,13 +246,14 @@ class MainWindow():
             scrollregion=self.canvas['left'].bbox("all"))
 
     def show_content(self):
+        print(1)
         self.item_list = {'left': {'dirs': [], 'user': [], 'disks': []},
                           'right': {'dirs': [], 'files': [], 'unrec': []}}
         self.item_list['right'] = self.__get_content(self.path_str.get())
         if self.path_str.get() != '/':
             self.item_list['right']['dirs'].insert(
                 0, {'path': self.path_str.get() + '/../', 'name': '--UP--'})
-
+        print(2)
         self.item_list['left']['dirs'] = [{'path': '/', 'name': 'ROOT'}]
         for fol in self.path_tree:
             self.item_list['left']['dirs'] += self.__get_content(fol)['dirs']
@@ -261,9 +262,11 @@ class MainWindow():
         self.item_list['left']['user'].append({'path': os.path.abspath(
             os.path.expanduser('~')), 'name': 'NTheme'})
         self.item_list['left']['disks'] += self.__get_content('/mnt')['dirs']
-
+        print(3)
         self.__draw_content()
+        print(4)
         self.__draw_tree()
+        print(666)
 
     def __goto_dir(self, event, path):
         if not os.path.exists(path):
@@ -287,6 +290,9 @@ class MainWindow():
     def __remove_set(self, event, path):
         new_tree = {elem for elem in self.path_tree if elem.find(path) == -1}
         if len(new_tree) == len(self.path_tree):
+            if not os.access(path, os.R_OK):
+                self.canvas_menu.warn('Warning', 'Permission denied')
+                return
             while True:
                 new_tree.add(path)
                 if path == '/':
