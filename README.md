@@ -26,7 +26,7 @@ File manager supports the following possibilities:
 
 4. Create a folder or file. Cleck on right mouse button to open menu
 
-5. Move, copy and rename files or folders. Click on the right button on a file ot it's icon on left or right list. To paste copied you can use as well Ctrl+C, to paste moved Ctrl+D
+5. Move, copy and rename files or folders. Click on the right button on a file ot it's icon on left or right list. To paste copied you can use as well __Ctrl+C__, to paste moved Ctrl+D
 
 6. Undo action (copy, move, rename). Use Ctrl+Z or menu button
 
