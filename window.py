@@ -14,7 +14,7 @@ class MainWindow():
         self.__load_content()
         self.__make_path_frame()
         self.__make_main_canvas()
-        self.__goto_dir(tk.Event(), self.path_str.get())
+        self.show_content()
 
     def __make_window(self):
         self.window = tk.Tk()
@@ -164,46 +164,6 @@ class MainWindow():
             widget.configure(fg='#000000')
             widget.grid_remove()
 
-    def __draw_content(self):
-        self.__update_frame('right')
-
-        row = 0
-        for i in self.item_list['right']:
-            for item in self.item_list['right'][i]:
-                self.name['right'][row].configure(text=item['name'])
-                self.name['right'][row].grid()
-
-                if item['name'] == '--UP--':
-                    self.icon['right'][row].configure(
-                        image=self.image['rest'][0])
-                else:
-                    open = os.access(item['path'], os.R_OK)
-                    self.icon['right'][row].configure(
-                        image=self.image[i][open])
-
-                    def menu(event, name=item):
-                        return self.item_menu.show(event, name)
-                    self.name['right'][row].bind('<Button-3>', menu)
-                    self.icon['right'][row].bind('<Button-3>', menu)
-                self.icon['right'][row].grid()
-
-                if i == 'dirs':
-                    def goto(event, path=item['path']):
-                        return self.__goto_dir(event, path)
-                    self.name['right'][row].bind('<Button-1>', goto)
-                    self.icon['right'][row].bind('<Button-1>', goto)
-                elif i == 'files' and os.access(item['path'], os.X_OK):
-                    def exec(event, path=item['path']):
-                        return os.system(path)
-                    self.name['right'][row].configure(fg='#EE204D')
-                    self.name['right'][row].bind('<Button-1>', exec)
-                    self.icon['right'][row].bind('<Button-1>', exec)
-
-                row += 1
-        self.cframe['right'].update()
-        self.canvas['right'].configure(
-            scrollregion=self.canvas['right'].bbox('all'))
-
     def __draw_tree(self):
         self.__update_frame('left')
 
@@ -245,15 +205,50 @@ class MainWindow():
         self.canvas['left'].configure(
             scrollregion=self.canvas['left'].bbox("all"))
 
+    def __draw_content(self):
+        self.__update_frame('right')
+
+        row = 0
+        for i in self.item_list['right']:
+            for item in self.item_list['right'][i]:
+                self.name['right'][row].configure(text=item['name'])
+                self.name['right'][row].grid()
+
+                if item['name'] == '--UP--':
+                    self.icon['right'][row].configure(
+                        image=self.image['rest'][0])
+                else:
+                    open = os.access(item['path'], os.R_OK)
+                    self.icon['right'][row].configure(
+                        image=self.image[i][open])
+
+                    def menu(event, name=item):
+                        return self.item_menu.show(event, name)
+                    self.name['right'][row].bind('<Button-3>', menu)
+                    self.icon['right'][row].bind('<Button-3>', menu)
+                self.icon['right'][row].grid()
+
+                if i == 'dirs':
+                    def goto(event, path=item['path']):
+                        return self.__goto_dir(event, path)
+                    self.name['right'][row].bind('<Button-1>', goto)
+                    self.icon['right'][row].bind('<Button-1>', goto)
+                elif i == 'files' and os.access(item['path'], os.X_OK):
+                    def exec(event, path=item['path']):
+                        return os.system(path)
+                    self.name['right'][row].configure(fg='#EE204D')
+                    self.name['right'][row].bind('<Button-1>', exec)
+                    self.icon['right'][row].bind('<Button-1>', exec)
+
+                row += 1
+        self.cframe['right'].update()
+        self.canvas['right'].configure(
+            scrollregion=self.canvas['right'].bbox('all'))
+
     def show_content(self):
-        print(1)
         self.item_list = {'left': {'dirs': [], 'user': [], 'disks': []},
                           'right': {'dirs': [], 'files': [], 'unrec': []}}
-        self.item_list['right'] = self.__get_content(self.path_str.get())
-        if self.path_str.get() != '/':
-            self.item_list['right']['dirs'].insert(
-                0, {'path': self.path_str.get() + '/../', 'name': '--UP--'})
-        print(2)
+
         self.item_list['left']['dirs'] = [{'path': '/', 'name': 'ROOT'}]
         for fol in self.path_tree:
             self.item_list['left']['dirs'] += self.__get_content(fol)['dirs']
@@ -262,11 +257,13 @@ class MainWindow():
         self.item_list['left']['user'].append({'path': os.path.abspath(
             os.path.expanduser('~')), 'name': 'NTheme'})
         self.item_list['left']['disks'] += self.__get_content('/mnt')['dirs']
-        print(3)
-        self.__draw_content()
-        print(4)
         self.__draw_tree()
-        print(666)
+
+        self.item_list['right'] = self.__get_content(self.path_str.get())
+        if self.path_str.get() != '/':
+            self.item_list['right']['dirs'].insert(
+                0, {'path': self.path_str.get() + '/../', 'name': '--UP--'})
+        self.__draw_content()
 
     def __goto_dir(self, event, path):
         if not os.path.exists(path):
@@ -283,7 +280,7 @@ class MainWindow():
             while path != '/':
                 path = os.path.abspath(os.path.join(path, os.pardir))
                 self.path_tree.add(path)
-                
+
         self.show_content()
         self.canvas['right'].focus_set()
 

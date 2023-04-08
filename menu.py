@@ -94,11 +94,11 @@ class ItemMenu(Menu, tk.Menu):
         self.window = window
         self.copy_str = {'path': '', 'name': ''}
         self.move_str = {'path': '', 'name': ''}
-        self.add_command(label='Rename...', command=self.rename_item)
+        self.add_command(label='Rename...', command=self.__rename_item)
         self.add_command(label='Copy...', command=self.copy_fill)
         self.add_command(label='Cut...', command=self.move_fill)
         self.add_separator()
-        self.add_command(label='Remove...', command=self.delete_item)
+        self.add_command(label='Remove...', command=self.__delete_item)
 
         self.tmp = '/tmp/.ntheme/'
         if not os.path.exists(self.tmp):
@@ -115,17 +115,17 @@ class ItemMenu(Menu, tk.Menu):
     def move_fill(self):
         self.move_str = self.item
 
-    def delete_item(self):
-        if not tkmsg.askyesno('Confirmation', 'Are you sure you want to delete_item?'):
+    def __delete_item(self):
+        if not tkmsg.askyesno('Confirmation', 'Are you sure you want to delete?'):
             return
         if self.__check_path(self.item['path'], ''):
             return
-        self.__inner_move(self.item['path'], self.tmp + 
+        self.__inner_move(self.item['path'], self.tmp +
                           self.item['name'], 'Cannot delete')
-        self.stack.append([self.__inner_move, self.tmp + 
+        self.stack.append([self.__inner_move, self.tmp +
                           self.item['name'], self.item['path']])
 
-    def rename_item(self):
+    def __rename_item(self):
         name = self.get_name('Renaming a file...')
         path = self.window.path_str.get() + '/'
         self.__check_path(self.item['path'], path + name)
@@ -157,14 +157,6 @@ class ItemMenu(Menu, tk.Menu):
                               self.stack[-1][2], 'Cannot cancel')
             self.stack.pop()
 
-    def __check_path(self, source, final):
-        if not os.path.exists(source):
-            self.warn('Warning', 'Source object does not exist')
-            return True
-        if os.path.exists(final):
-            self.warn('Warning', 'Final object already exists')
-            return True
-
     def __inner_move(self, source, final, dialog):
         msg = {'title': 'Warning', 'message': dialog}
         self.oper_2(shutil.move, source, final, err=self.warn, **msg)
@@ -177,6 +169,14 @@ class ItemMenu(Menu, tk.Menu):
             self.oper_2(shutil.copytree, source, final, err=self.warn, **msg)
         self.oper_2(shutil.copy2, source, final, err=exec)
         self.window.show_content()
+
+    def __check_path(self, source, final):
+        if not os.path.exists(source):
+            self.warn('Warning', 'Source object does not exist')
+            return True
+        if os.path.exists(final):
+            self.warn('Warning', 'Final object already exists')
+            return True
 
     def show(self, event, name):
         self.post(event.x_root, event.y_root)
