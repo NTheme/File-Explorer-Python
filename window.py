@@ -118,12 +118,16 @@ class MainWindow():
             self.canvas[i].create_window(
                 (0, 0), window=self.cframe[i], anchor='nw')
 
+        self.menu = menu.Menu(self.window)
         self.canvas_menu = menu.CanvasMenu(self, self.cframe['right'])
         self.canvas['right'].bind('<Button-3>', self.canvas_menu.show)
         self.item_menu = menu.ItemMenu(self, self.cframe['right'])
         self.window.bind('<Control-z>', self.item_menu.cancel)
+        self.window.bind('<Control-Z>', self.item_menu.cancel)
         self.window.bind('<Control-v>', self.item_menu.copy_item)
+        self.window.bind('<Control-V>', self.item_menu.copy_item)
         self.window.bind('<Control-d>', self.item_menu.move_item)
+        self.window.bind('<Control-D>', self.item_menu.move_item)
 
     def __get_content(self, path):
         item_list = {'dirs': [], 'files': [], 'unrec': []}

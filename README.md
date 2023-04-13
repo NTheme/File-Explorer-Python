@@ -28,7 +28,7 @@ File manager supports the following possibilities:
 
 5. Move, copy and rename files or folders. Click on the right button on a file ot it's icon on left or right list. To paste copied you can use as well _Ctrl+C_, to paste moved _Ctrl+D_
 
-6. Undo action (copy, move, rename). Use _Ctrl+Z_ or menu button
+6. Undo action (copy, move, rename or create). Use _Ctrl+Z_ or menu button
 
 ----------------------------
 

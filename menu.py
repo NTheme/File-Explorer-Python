@@ -7,10 +7,16 @@ import shutil
 import tkinter.messagebox as tkmsg
 import tkinter.simpledialog as tkdialog
 
+stack = []
+
 
 class Menu():
     def __init__(self, window):
         self.window = window
+
+        self.tmp = '/tmp/.ntheme/'
+        if not os.path.exists(self.tmp):
+            os.makedirs(self.tmp)
 
     def empty(self):
         pass
@@ -35,6 +41,17 @@ class Menu():
                 name = ''
         return name
 
+    def inner_move(self, source, final, dialog):
+        msg = {'title': 'Warning', 'message': dialog}
+        self.oper_2(shutil.move, source, final, err=self.warn, **msg)
+        self.window.show_content()
+
+    def cancel(self, event=tk.Event()):
+        if len(stack) > 0:
+            stack[-1][0](stack[-1][1],
+                         stack[-1][2], 'Cannot cancel')
+            stack.pop()
+
 
 class CanvasMenu(Menu, tk.Menu):
     def __init__(self, window, parent):
@@ -47,18 +64,22 @@ class CanvasMenu(Menu, tk.Menu):
 
     def make_file(self):
         name = self.__get_name('Creating a file...')
+        path = self.window.path_str.get() + '/'
 
         def exec():
             open(self.window.path_str.get() + '/' + name, 'w').close()
         msg = {'title': 'Warning', 'message': 'Unable to create a file!'}
         self.oper_2(exec, err=self.warn, **msg)
         self.window.show_content()
+        stack.append([self.inner_move, path + name, self.tmp])
 
     def make_dir(self):
-        path = self.window.path_str.get() + '/' + self.__get_name('Creating a directory...')
+        name = self.__get_name('Creating a directory...')
+        path = self.window.path_str.get() + '/'
         msg = {'title': 'Warning', 'message': 'Unable to create a folder!'}
-        self.oper_2(os.makedirs, path, err=self.warn, **msg)
+        self.oper_2(os.makedirs, path + name, err=self.warn, **msg)
         self.window.show_content()
+        stack.append([self.inner_move, path + name, self.tmp])
 
     def __get_name(self, dialog):
         name = ''
@@ -74,13 +95,14 @@ class CanvasMenu(Menu, tk.Menu):
     def show(self, event):
         self.oper_2(self.delete, 'Paste moved...', err=self.empty)
         self.oper_2(self.delete, 'Paste copied...', err=self.empty)
+        self.oper_2(self.delete, 'Cancel...', err=self.empty)
         if self.window.item_menu.copy_str['path'] != '':
             self.add_command(label='Paste copied...',
                              command=self.window.item_menu.copy_item)
         if self.window.item_menu.move_str['path'] != '':
             self.add_command(label='Paste moved...',
                              command=self.window.item_menu.move_item)
-        if len(self.window.item_menu.stack) > 0:
+        if len(stack) > 0:
             self.add_command(label='Cancel...',
                              command=self.window.item_menu.cancel)
         self.post(event.x_root, event.y_root)
@@ -100,11 +122,6 @@ class ItemMenu(Menu, tk.Menu):
         self.add_separator()
         self.add_command(label='Remove...', command=self.__delete_item)
 
-        self.tmp = '/tmp/.ntheme/'
-        if not os.path.exists(self.tmp):
-            os.makedirs(self.tmp)
-        self.stack = []
-
     def __del__(self):
         if os.path.exists(self.tmp):
             shutil.rmtree(self.tmp)
@@ -120,17 +137,17 @@ class ItemMenu(Menu, tk.Menu):
             return
         if self.__check_path(self.item['path'], ''):
             return
-        self.__inner_move(self.item['path'], self.tmp +
-                          self.item['name'], 'Cannot delete')
-        self.stack.append([self.__inner_move, self.tmp +
-                          self.item['name'], self.item['path']])
+        self.inner_move(self.item['path'], self.tmp +
+                        self.item['name'], 'Cannot delete')
+        stack.append([self.inner_move, self.tmp +
+                      self.item['name'], self.item['path']])
 
     def __rename_item(self):
         name = self.get_name('Renaming a file...')
         path = self.window.path_str.get() + '/'
         self.__check_path(self.item['path'], path + name)
-        self.__inner_move(self.item['path'], path + name, 'Cannot rename item')
-        self.stack.append([self.__inner_move, path + name, self.item['path']])
+        self.inner_move(self.item['path'], path + name, 'Cannot rename item')
+        stack.append([self.inner_move, path + name, self.item['path']])
 
     def move_item(self, event=tk.Event()):
         if self.move_str['path'] == '':
@@ -138,9 +155,9 @@ class ItemMenu(Menu, tk.Menu):
         path = self.window.path_str.get() + '/' + self.move_str['name']
         if self.__check_path(self.move_str['path'], path):
             return
-        self.__inner_move(self.move_str['path'], path, 'Cannot move item')
+        self.inner_move(self.move_str['path'], path, 'Cannot move item')
         self.move_str = {'path': '', 'name': ''}
-        self.stack.append([self.__inner_move, path, self.item['path']])
+        stack.append([self.inner_move, path, self.item['path']])
 
     def copy_item(self, event=tk.Event()):
         if self.copy_str['path'] == '':
@@ -149,18 +166,7 @@ class ItemMenu(Menu, tk.Menu):
         if self.__check_path(self.copy_str['path'], path):
             return
         self.__inner_copy(self.copy_str['path'], path)
-        self.stack.append([self.__inner_move, path, self.tmp])
-
-    def cancel(self, event=tk.Event()):
-        if len(self.stack) > 0:
-            self.stack[-1][0](self.stack[-1][1],
-                              self.stack[-1][2], 'Cannot cancel')
-            self.stack.pop()
-
-    def __inner_move(self, source, final, dialog):
-        msg = {'title': 'Warning', 'message': dialog}
-        self.oper_2(shutil.move, source, final, err=self.warn, **msg)
-        self.window.show_content()
+        stack.append([self.inner_move, path, self.tmp])
 
     def __inner_copy(self, source, final):
         msg = {'title': 'Warning', 'message': 'Cannot copy'}
