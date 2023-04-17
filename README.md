@@ -11,9 +11,17 @@ How to execute?
 You need an **shutil**, **os** and **tkinter** tlibraries to start the project.
 
 ### Execution
-  Just start the manager by executing the following file:
+_Now you can start to install game_
+
+1. Clone the repo and go to project folder
   ```sh
-  filemanager.py
+  git clone https://github.com/NTheme/File-Manager.git
+  cd File-Manager
+  ```
+
+2. Just start the manager by executing the following file:
+  ```sh
+  python3 ./filemanager.py
   ```
 ### Usage
 File manager supports the following possibilities:

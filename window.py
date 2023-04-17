@@ -259,7 +259,7 @@ class MainWindow():
         self.item_list['left']['dirs'] = sorted(
             self.item_list['left']['dirs'], key=lambda d: d['path'])
         self.item_list['left']['user'].append({'path': os.path.abspath(
-            os.path.expanduser('~')), 'name': 'NTheme'})
+            os.path.expanduser('~')), 'name': 'User'})
         self.item_list['left']['disks'] += self.__get_content('/mnt')['dirs']
         self.__draw_tree()
 
