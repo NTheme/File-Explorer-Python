@@ -29,14 +29,14 @@ class MainWindow():
     def __load_content(self):
         self.font = tkfont.Font(family='Arial')
         self.font.configure(size=11)
-        self.image = {'dirs': [tk.PhotoImage(file='res/folder_rest.png'),
-                      tk.PhotoImage(file='res/folder_open.png')],
-                      'files': [tk.PhotoImage(file='res/file_rest.png'),
-                                tk.PhotoImage(file='res/file_open.png')],
-                      'unrec': [tk.PhotoImage(file='res/unknown_rest.png'),
-                                tk.PhotoImage(file='res/unknown_open.png')],
-                      'rest': [tk.PhotoImage(file='res/back.png'),
-                               tk.PhotoImage(file='res/disk.png')]}
+        self.image = {'dirs': [tk.PhotoImage(file='share/folder_rest.png'),
+                      tk.PhotoImage(file='share/folder_open.png')],
+                      'files': [tk.PhotoImage(file='share/file_rest.png'),
+                                tk.PhotoImage(file='share/file_open.png')],
+                      'unrec': [tk.PhotoImage(file='share/unknown_rest.png'),
+                                tk.PhotoImage(file='share/unknown_open.png')],
+                      'rest': [tk.PhotoImage(file='share/back.png'),
+                               tk.PhotoImage(file='share/disk.png')]}
 
     def __make_path_frame(self):
         path_frame = tk.Frame(self.window)
